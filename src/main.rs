@@ -67,7 +67,7 @@ fn main() -> anyhow::Result<()> {
 
     let project = Project::try_from(config)?;
     let solver_start_time = Instant::now();
-    let solution = MiniMax::new(5).solve(&project)?;
+    let solution = MiniMax::new(args.search_depth).solve(&project)?;
     let solver_end_time = Instant::now();
     solution.print();
     if let Some(output_csv) = args.output_csv {
