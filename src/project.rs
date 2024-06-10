@@ -514,6 +514,13 @@ mod test {
     use super::*;
 
     #[test]
+    fn example_is_a_valid_project() {
+        let example = include_str!("../example.toml");
+        let config: ProjectConfig = toml::from_str(example).expect("failed to parse example config file");
+        Project::try_from(config).unwrap();
+    }
+
+    #[test]
     fn test_task_queue() {
         let mut queue = TaskQueue::new(&Resource {
             id: ResourceId(0),

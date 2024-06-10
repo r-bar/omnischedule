@@ -23,33 +23,17 @@ impl Solver for MiniMax {
 
     fn solve(&self, project: &Project) -> anyhow::Result<Solution> {
         let mut solution = Solution::new(&project.resources);
-        //let mut solutions = vec![Solution::new(&project.resources)];
-        //let mut scheduled_task_count = 0;
         let mut max_score = 0.0;
 
         // each iteration of the loop we should be allocating a single task so by the end of
         // iterating all the tasks in the project all tasks should be allocated
         for i in 0..project.tasks.len() {
             let (next_score, mut next_solutions) = self.par_minimax(project, &solution, 5)?;
-            //let results = solutions
-            //    .iter()
-            //    .map(|solution| MiniMax.par_minimax(project, solution, 3))
-            //    .filter_map(|r| r.ok())
-            //    .collect_vec();
-            //let next_score = results.iter()
-            //    .map(|(score, _)| *score)
-            //    .reduce(f64::max)
-            //    .ok_or(anyhow::anyhow!("no scores?"))?;
             anyhow::ensure!(
                 next_score >= max_score,
                 "next score lower than current score"
             );
-            //let next_solutions = results.into_iter()
-            //    .filter(|(score, _solutions)| *score == next_score)
-            //    .flat_map(|(_score, solutions)| solutions)
-            //    .collect_vec();
             max_score = next_score;
-            //solutions = next_solutions;
             solution = next_solutions.pop()
                 .ok_or_else(|| {
                     anyhow::anyhow!("no solutions?").context(anyhow::anyhow!(
@@ -58,15 +42,7 @@ impl Solver for MiniMax {
                     ))
                 })?;
             println!("Scheduled {} tasks", i + 1);
-            //dbg!(max_score, solutions.len());
         }
-
-        //assert_eq!(
-        //    scheduled_task_count,
-        //    project.tasks.len(),
-        //    "not all tasks got scheduled"
-        //);
-        //let solution = solutions.first().ok_or(anyhow::anyhow!("no solutions?"))?;
         let solution_task_count = solution.task_entries().count();
         if solution_task_count == project.tasks.len() {
             Ok(solution.clone())
@@ -112,7 +88,6 @@ impl MiniMax {
         let mut best_solution = vec![root_solution.clone()];
         let mut errors: Vec<anyhow::Error> = Vec::new();
         for (resource, task) in combinations {
-            //dbg!(resource, task);
             let mut child = root_solution.clone();
             match child.push_task(resource, task) {
                 Err(e) => {
@@ -223,16 +198,48 @@ mod test {
     use crate::ProjectConfig;
 
     #[test]
-    fn solve_example_with_minimax() {
-        let example_config = include_str!("../example.toml");
+    fn solve_with_minimax() {
+        let example_config = r#"
+resources = [
+  {name = "10x"},
+  {name = "Ops"},
+  {name = "Sr"},
+  {name = "Mid"},
+]
+
+[sizes]
+S = 10
+M = 30
+L = 90
+
+[[tasks]]
+name = "Task 1"
+resource = {in = ["10x"]}
+size = "S"
+dependencies = ["Task 2", "Task 3"]
+
+[[tasks]]
+name = "Task 2"
+resource = {in = ["Sr", "Mid"]}
+size = "M"
+dependencies = []
+
+[[tasks]]
+name = "Task 3"
+resource = {in = ["Sr", "Mid"]}
+size = "L"
+dependencies = []
+"#;
         let config: ProjectConfig =
             toml::from_str(example_config).expect("failed to parse example config file");
         let project = Project::try_from(config).unwrap();
         let solution = MiniMax::new(3).solve(&project).unwrap();
         solution.print();
         solution.csv_table().print_tty(false).unwrap();
-        //let solution_tasks: Vec<_> = solution.task_queues.iter().flat_map(|q| &q.tasks).collect();
-        //assert_eq!(project.tasks.len(), solution_tasks.len());
+        assert_eq!(project.tasks.len(), 3);
+        assert_eq!(solution.task_entries().count(), 3);
+        assert_eq!(solution.work(), 130);
+        assert_eq!(solution.duration(), 100);
     }
 
     #[test]
