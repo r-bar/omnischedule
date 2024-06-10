@@ -28,7 +28,7 @@ impl Solver for MiniMax {
         // each iteration of the loop we should be allocating a single task so by the end of
         // iterating all the tasks in the project all tasks should be allocated
         for i in 0..project.tasks.len() {
-            let (next_score, mut next_solutions) = self.par_minimax(project, &solution, 5)?;
+            let (next_score, mut next_solutions) = self.par_minimax(project, &solution, self.search_depth)?;
             anyhow::ensure!(
                 next_score >= max_score,
                 "next score lower than current score"

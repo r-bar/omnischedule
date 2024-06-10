@@ -17,7 +17,7 @@ pub struct CliArgs {
     add_resource: Vec<ResourceConfig>,
 
     /// The maximum depth of the search tree to use. Deep trees can take a long time to solve.
-    #[arg(default_value = "5")]
+    #[arg(short = 'd', long, default_value = "5")]
     search_depth: usize,
 
     /// Output the solution to a CSV file

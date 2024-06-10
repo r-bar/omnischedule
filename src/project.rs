@@ -1,4 +1,3 @@
-use itertools::Itertools;
 use prettytable::Table;
 use prettytable::{format::FormatBuilder, format::LinePosition, format::LineSeparator, row, table};
 use std::collections::HashMap;
@@ -484,7 +483,7 @@ impl Solution {
                 ),
                 Some(entry) => {
                     //dbg!(dep, entry, task, start_date);
-                },
+                }
             }
         }
         let queue = &mut self.task_queues[resource_id.0];
@@ -494,12 +493,13 @@ impl Solution {
 
     pub fn csv_table(&self, start_date: chrono::NaiveDate) -> Table {
         let mut table = Table::new();
-        table.add_row(row!["Resource", "Task", "Start", "End"]);
-        for queue in self.task_queues.iter() {
+        table.add_row(row!["Resource ID", "Resource Name", "Task", "Start", "End"]);
+        for (queue_num, queue) in self.task_queues.iter().enumerate() {
             for entry in queue.tasks.iter() {
                 let entry_start_date = start_date + chrono::Duration::days(entry.start as i64);
                 let entry_end_date = start_date + chrono::Duration::days(entry.end() as i64);
                 table.add_row(row![
+                    queue_num,
                     queue.assignee.name,
                     entry.label,
                     entry_start_date,
@@ -518,7 +518,8 @@ mod test {
     #[test]
     fn example_is_a_valid_project() {
         let example = include_str!("../example.toml");
-        let config: ProjectConfig = toml::from_str(example).expect("failed to parse example config file");
+        let config: ProjectConfig =
+            toml::from_str(example).expect("failed to parse example config file");
         Project::try_from(config).unwrap();
     }
 
