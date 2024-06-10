@@ -1,5 +1,6 @@
 use std::fs::File;
 use std::io::BufWriter;
+use std::time::Instant;
 use clap::Parser;
 
 use omnischedule::solver::{MiniMax, Solver};
@@ -65,13 +66,16 @@ fn main() -> anyhow::Result<()> {
     }
 
     let project = Project::try_from(config)?;
+    let solver_start_time = Instant::now();
     let solution = MiniMax::new(5).solve(&project)?;
+    let solver_end_time = Instant::now();
     solution.print();
     if let Some(output_csv) = args.output_csv {
         let csv_file = File::create(output_csv)?;
         let mut writer = BufWriter::new(csv_file);
         solution.csv_table(start_date).to_csv(&mut writer)?;
     }
+    println!("Solver run time: {:?}", solver_end_time - solver_start_time);
     println!("Project start date: {}", &start_date);
     println!("Solution completion time: {} days", solution.duration());
     println!("Solution completion date: {}", start_date + chrono::Duration::days(solution.duration() as i64));
