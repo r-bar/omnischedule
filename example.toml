@@ -1,0 +1,29 @@
+resources = [
+  {name = "10x"},
+  {name = "Ops"},
+  {name = "Sr"},
+  {name = "Mid"},
+]
+
+[sizes]
+S = 10
+M = 30
+L = 90
+
+[[tasks]]
+name = "Task 1"
+resource = {in = ["10x"]}
+size = "S"
+dependencies = ["Task 2", "Task 3"]
+
+[[tasks]]
+name = "Task 2"
+resource = {in = ["Sr", "Mid"]}
+size = "M"
+dependencies = []
+
+[[tasks]]
+name = "Task 3"
+resource = {in = ["Sr", "Mid"]}
+size = "L"
+dependencies = []

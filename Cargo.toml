@@ -1,0 +1,15 @@
+[package]
+name = "omnischedule"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+anyhow = "1.0.86"
+clap = { version = "4.5.6", features = ["derive"] }
+colorful = "0.2.2"
+itertools = "0.13.0"
+prettytable-rs = "0.10.0"
+rayon = "1.10.0"
+serde = { version = "1.0.203", features = ["derive"] }
+serde_yml = "0.0.10"
+toml = "0.8.14"
