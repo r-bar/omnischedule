@@ -235,7 +235,8 @@ dependencies = []
         let project = Project::try_from(config).unwrap();
         let solution = MiniMax::new(3).solve(&project).unwrap();
         solution.print();
-        solution.csv_table().print_tty(false).unwrap();
+        let start_date = chrono::Local::now().naive_local().date();
+        solution.csv_table(start_date).print_tty(false).unwrap();
         assert_eq!(project.tasks.len(), 3);
         assert_eq!(solution.task_entries().count(), 3);
         assert_eq!(solution.work(), 130);

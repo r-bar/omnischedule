@@ -5,6 +5,7 @@ edition = "2021"
 
 [dependencies]
 anyhow = "1.0.86"
+chrono = { version = "0.4.38", features = ["serde", "arbitrary"] }
 clap = { version = "4.5.6", features = ["derive"] }
 colorful = "0.2.2"
 itertools = "0.13.0"

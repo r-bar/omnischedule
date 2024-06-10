@@ -492,16 +492,18 @@ impl Solution {
         Ok(start_date)
     }
 
-    pub fn csv_table(&self) -> Table {
+    pub fn csv_table(&self, start_date: chrono::NaiveDate) -> Table {
         let mut table = Table::new();
         table.add_row(row!["Resource", "Task", "Start", "End"]);
         for queue in self.task_queues.iter() {
             for entry in queue.tasks.iter() {
+                let entry_start_date = start_date + chrono::Duration::days(entry.start as i64);
+                let entry_end_date = start_date + chrono::Duration::days(entry.end() as i64);
                 table.add_row(row![
                     queue.assignee.name,
                     entry.label,
-                    entry.start,
-                    entry.end(),
+                    entry_start_date,
+                    entry_end_date,
                 ]);
             }
         }
